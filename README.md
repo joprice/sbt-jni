@@ -1,7 +1,10 @@
 sbt-jni
 =======
 
-Sbt plugin for projects with jni sources.
+Sbt plugin for projects with jni sources. 
+
+On `compile`, the `jniCompile` task will be run. It first runs the `javah` task, which generates JNI headers. Headers generated for jni classes will end up in `headersPath`, which defaults to `target/native/include`. The final library will be in `binPath`, which defaults to `target/native/bin`.
+
 
 Install
 --------
@@ -35,10 +38,6 @@ jniClasses := Seq(
   "com.myapp.ClassWithJniCode"
 )
 ```
-
-Headers generated for jni classes will end up in `headersPath` (`target/native/include`). 
-
-The final library will be in `binPath` (`target/native/bin`).
 
 
 
