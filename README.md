@@ -3,6 +3,9 @@ sbt-jni
 
 Sbt plugin for projects with jni sources.
 
+Usage
+--------
+
 ```scala
 import com.github.joprice.Jni
 import Jni.Keys._
