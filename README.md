@@ -18,7 +18,7 @@ addSbtPlugin("com.github.joprice" % "sbt-jni" % "0.1.0")
 Usage
 --------
 
-Put c/cpp sources in `nativeSource` (`src/main/native`).
+Native sources should be placed in `nativeSource`, which defaults to `src/main/native`.
 
 ```scala
 import com.github.joprice.Jni
