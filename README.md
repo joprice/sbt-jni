@@ -39,7 +39,9 @@ jniClasses := Seq(
 )
 ```
 
-
+Caveats
+-----
+Only tested on Centos, g++, with cpp and java jni sources.
 
 
 
