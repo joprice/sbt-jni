@@ -40,6 +40,8 @@ object Jni {
     lazy val jreIncludes = settingKey[Seq[String]]("Includes for jni")
 
     lazy val jdkHome = settingKey[Option[File]]("Used to find jre include files for JNI")
+
+    lazy val cpp11 = settingKey[Boolean]("Whether to pass the cpp11 flag to the compiler")
   }
 
   import Jni.Keys._
@@ -77,12 +79,13 @@ object Jni {
       "-I/usr/include",
       "-L/usr/local/include"
     ) ++ jreIncludes.value,
+    cpp11 := true,
     gccFlags := Seq(
-      "-std=c++0x",
       "-shared",
       "-fPIC",
       "-O3"
-    ) ++ includes.value,
+    ) ++ (if (cpp11.value) Seq("-std=c++0x") else Seq.empty)
+      ++ includes.value,
     binPath := new File((target in Compile).value / "native",  "bin"),
     headersPath := new File((target in Compile).value / "native", "include"),
     nativeSource := new File((sourceDirectory).value / "main",  "native"),
