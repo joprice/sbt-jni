@@ -1,5 +1,6 @@
 package com.github.joprice
 
+import java.io.File
 import sbt._
 import Keys._
 import sbtsequential.Plugin._
@@ -107,12 +108,11 @@ object Jni {
      .value,
     javah := Def.task {
       val log = streams.value.log
-      val classes = {(classDirectory in Compile).value} 
+      val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
       val javahCommand = s"javah -d ${headersPath.value} -classpath $classes ${jniClasses.value.mkString(" ")}"
       log.info(javahCommand)
       javahCommand ! log
-    }.dependsOn(compile in Compile)
-     .tag(Tags.Compile, Tags.CPU)
+    }.tag(Tags.Compile, Tags.CPU)
      .value,
     cleanFiles ++= Seq( 
       binPath.value,
