@@ -1,5 +1,6 @@
 package com.github.joprice
 
+import java.io.File
 import sbt._
 import Keys._
 import scala.language.postfixOps
@@ -116,8 +117,7 @@ object Jni {
       val javahCommand = s"javah -d ${headersPath.value} -classpath $classes ${jniClasses.value.mkString(" ")}"
       log.info(javahCommand)
       javahCommand ! log
-    }.dependsOn(compile in Compile)
-     .tag(Tags.Compile, Tags.CPU)
+    }.tag(Tags.Compile, Tags.CPU)
      .value,
     cleanFiles ++= Seq(
       binPath.value,
