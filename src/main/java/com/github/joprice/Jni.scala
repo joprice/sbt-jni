@@ -106,7 +106,7 @@ object Jni {
       val flags = gccFlags.value.mkString(" ")
       val command = s"${nativeCompiler.value} $flags -o ${binPath.value}/lib${libraryName.value}.${libSuffix.value} $sources"
       log.info(command)
-      Process(command, binPath.value) ! (log)
+      checkExitCode(nativeCompiler.value, Process(command, binPath.value) ! log)
     }.dependsOn(javah)
      .tag(Tags.Compile, Tags.CPU)
      .value,
@@ -115,7 +115,7 @@ object Jni {
       val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
       val javahCommand = s"javah -d ${headersPath.value} -classpath $classes ${jniClasses.value.mkString(" ")}"
       log.info(javahCommand)
-      javahCommand ! log
+      checkExitCode("javah", javahCommand ! log)
     }.dependsOn(compile in Compile)
      .tag(Tags.Compile, Tags.CPU)
      .value,
@@ -149,5 +149,13 @@ object Jni {
       nativeJava ++ nativeScala
     }
   )
+
+  private def checkExitCode(name: String, exitCode: Int): Unit = {
+    if (exitCode != 0) {
+      throw new MessageOnlyException(
+        s"$name exited with non-zero status ($exitCode)"
+      )
+    }
+  }
 }
 
