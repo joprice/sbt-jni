@@ -1,3 +1,10 @@
+
+# avoid duplicate builds when doing PRs from origin to origin
+general:
+  branches:
+    only:
+      - master
+
 machine:
   timezone: UTC
   java:
@@ -6,6 +13,9 @@ machine:
     SBT_OPTS: "-Xmx1G -XX:MaxMetaspaceSize=384M -XX:+UseCompressedOops"
 
 dependencies:
+  pre:
+    - wget -q https://dl.bintray.com/sbt/debian/sbt-0.13.9.deb
+    - sudo dpkg -i sbt-0.13.9.deb
   cache_directories:
     - "~/.sbt"
     - "target/resolution-cache"
