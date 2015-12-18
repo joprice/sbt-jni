@@ -5,11 +5,13 @@ machine:
     version: oraclejdk8
   environment:
     SBT_OPTS: "-Xmx1G -XX:MaxMetaspaceSize=384M -XX:+UseCompressedOops"
-
-dependencies:
   pre:
     - wget -q https://dl.bintray.com/sbt/debian/sbt-0.13.9.deb
     - sudo dpkg -i sbt-0.13.9.deb
+    #- sudo update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/jdk1.8.0/bin/javah 1
+    #- sudo update-alternatives --config javah
+
+dependencies:
   cache_directories:
     - "~/.sbt"
     - "target/resolution-cache"
@@ -19,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - sbt test
+    - sbt scripted
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/test-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
