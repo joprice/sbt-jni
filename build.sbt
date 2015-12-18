@@ -6,7 +6,7 @@ organization := "com.github.joprice"
 
 sbtPlugin := true
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
 libraryDependencies ++= Seq(
   "com.eed3si9n" % "sbt-sequential" % "0.1.0" extra(
@@ -14,8 +14,6 @@ libraryDependencies ++= Seq(
     "scalaVersion" -> scalaBinaryVersion.value
   )
 )
-
-version := "0.1.0"
 
 bintraySettings
 
