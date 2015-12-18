@@ -1,10 +1,4 @@
 
-# avoid duplicate builds when doing PRs from origin to origin
-general:
-  branches:
-    only:
-      - master
-
 machine:
   timezone: UTC
   java:
