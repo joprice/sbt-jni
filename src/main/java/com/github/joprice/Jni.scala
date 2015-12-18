@@ -2,7 +2,6 @@ package com.github.joprice
 
 import sbt._
 import Keys._
-import sbtsequential.Plugin._
 
 object Jni {
   object Keys {
@@ -93,7 +92,7 @@ object Jni {
     jniSourceFiles := withExtensions((nativeSource.value ** "*").get, cppExtensions.value),
     jniCompile := Def.task {
       val log = streams.value.log
-      val mkBinDir = s"mkdir -p ${binPath.value}" 
+      val mkBinDir = s"mkdir -p ${binPath.value}"
       log.info(mkBinDir)
       mkBinDir ! log
       val sources = jniSourceFiles.value.mkString(" ")
@@ -107,14 +106,14 @@ object Jni {
      .value,
     javah := Def.task {
       val log = streams.value.log
-      val classes = {(classDirectory in Compile).value} 
+      val classes = {(classDirectory in Compile).value}
       val javahCommand = s"javah -d ${headersPath.value} -classpath $classes ${jniClasses.value.mkString(" ")}"
       log.info(javahCommand)
       javahCommand ! log
     }.dependsOn(compile in Compile)
      .tag(Tags.Compile, Tags.CPU)
      .value,
-    cleanFiles ++= Seq( 
+    cleanFiles ++= Seq(
       binPath.value,
       headersPath.value
     ),

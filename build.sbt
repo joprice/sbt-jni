@@ -8,13 +8,6 @@ sbtPlugin := true
 
 scalaVersion := "2.10.5"
 
-libraryDependencies ++= Seq(
-  "com.eed3si9n" % "sbt-sequential" % "0.1.0" extra(
-    "sbtVersion" -> sbtBinaryVersion.value,
-    "scalaVersion" -> scalaBinaryVersion.value
-  )
-)
-
 bintraySettings
 
 bintrayResolverSettings
