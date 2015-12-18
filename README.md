@@ -1,6 +1,9 @@
 sbt-jni
 =======
 
+[![Circle CI](https://circleci.com/gh/joprice/sbt-jni.svg?style=svg)](https://circleci.com/gh/joprice/sbt-jni)
+
+
 Sbt plugin for projects with jni sources. 
 
 On `compile`, the `jniCompile` task will be run. It first runs the `javah` task, which generates JNI headers. Headers generated for jni classes will end up in `headersPath`, which defaults to `target/native/include`. The final library will be in `binPath`, which defaults to `target/native/bin`.
@@ -42,7 +45,4 @@ jniClasses := Seq(
 Caveats
 -----
 Only tested on Centos, g++, with cpp and java jni sources.
-
-
-
 
