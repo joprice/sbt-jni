@@ -3,6 +3,7 @@ sbt-jni
 
 [![Circle CI](https://circleci.com/gh/joprice/sbt-jni.svg?style=svg)](https://circleci.com/gh/joprice/sbt-jni)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/9fc10cf8ef334b2bb0cae9e4fc9a2e64)](https://www.codacy.com/app/pricejosephd/sbt-jni)
 
 Sbt plugin for projects with jni sources. 
 
