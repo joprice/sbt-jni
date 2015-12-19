@@ -5,6 +5,8 @@ sbt-jni
 
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/9fc10cf8ef334b2bb0cae9e4fc9a2e64)](https://www.codacy.com/app/pricejosephd/sbt-jni)
 
+[![Download](https://api.bintray.com/packages/joprice/sbt-plugins/sbt-jni/images/download.svg)](https://bintray.com/joprice/sbt-plugins/sbt-jni/_latestVersion)
+
 Sbt plugin for projects with jni sources. 
 
 On `compile`, the `jniCompile` task will be run. It first runs the `jniJavah` task, which generates JNI headers. Headers generated for jni classes will end up in `jniHeadersPath`, which defaults to `target/native/include`. The final library will be in `jniBinPath`, which defaults to `target/native/bin`.
