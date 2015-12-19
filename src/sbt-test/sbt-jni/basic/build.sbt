@@ -1,17 +1,17 @@
-import com.github.joprice.Jni
-import Jni.Keys._
 
-Jni.settings
+enablePlugins(JniPlugin)
 
 scalaVersion := "2.11.7"
 
-jniClasses := Seq(
+jniNativeClasses := Seq(
   "com.joprice.Basic"
 )
 
-libraryName := "basic"
+jniNativeCompiler := "g++"
 
-libSuffix := {
+jniLibraryName := "basic"
+
+jniLibSuffix := {
   if (sys.props("os.name").toLowerCase.startsWith("mac")) "dylib" else "so"
 }
 
@@ -19,5 +19,5 @@ TaskKey[Unit]("check") := {
   val files = jniSourceFiles.value
   require(files.length == 1, "missing source files")
   require(files.head.getName.endsWith("basic.cpp"))
-  require((binPath.value / s"lib${libraryName.value}.${libSuffix.value}").exists)
+  require((jniBinPath.value / s"lib${jniLibraryName.value}.${jniLibSuffix.value}").exists)
 }
