@@ -11,6 +11,8 @@ object JniPlugin extends AutoPlugin {
   override def requires = JvmPlugin
 
   object autoImport {
+    lazy val JniPlugin = com.github.joprice.JniPlugin
+
     //tasks
 
     lazy val jni = taskKey[Unit]("Run jni build")
@@ -79,7 +81,7 @@ object JniPlugin extends AutoPlugin {
       jniJdkHome.value.fold(Seq.empty[String]) { home =>
         val absHome = home.getAbsolutePath
         // in a typical installation, jdk files are one directory above the location of the jre set in 'java.home'
-        Seq(s"include", s"include/$jreIncludeFolder").map(file => s"-I${absHome}/../$file")
+        Seq(s"include", s"include/$jreIncludeFolder").map(file => s"-I$absHome/../$file")
       }
     },
     jniIncludes := Seq(
@@ -98,7 +100,7 @@ object JniPlugin extends AutoPlugin {
       ++ jniIncludes.value,
     jniBinPath := (target in Compile).value / "native" /  "bin",
     jniHeadersPath := (target in Compile).value / "native" / "include",
-    jniNativeSources := (sourceDirectory).value / "main" / "native",
+    jniNativeSources := sourceDirectory.value / "main" / "native",
     jniCppExtensions := Seq("c", "cpp", "cc", "cxx"),
     jniSourceFiles := withExtensions(jniNativeSources.value, jniCppExtensions.value),
     jniCompile := Def.task {
@@ -151,7 +153,8 @@ object JniPlugin extends AutoPlugin {
       s"-Djava.library.path=${jniBinPath.value}"
     ),
     //required in order to have a separate jvm to set java options
-    fork in run := true
+    fork in run := true,
+    fork in test := true
   )
 
   private def checkExitCode(name: String, exitCode: Int): Unit = {
