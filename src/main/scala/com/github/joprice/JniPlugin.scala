@@ -6,12 +6,12 @@ import scala.language.postfixOps
 import java.io.File
 import plugins.JvmPlugin
 
-object JniPlugin extends AutoPlugin {
+object JniPlugin extends AutoPlugin { self =>
 
   override def requires = JvmPlugin
 
   object autoImport {
-    lazy val JniPlugin = com.github.joprice.JniPlugin
+    lazy val JniPlugin = self
 
     //tasks
 
@@ -147,7 +147,8 @@ object JniPlugin extends AutoPlugin {
       jniBinPath.value,
       jniHeadersPath.value
     ),
-    compile <<= (compile in Compile, jniCompile).map((result, _) => result),
+    compile := (compile in Compile).dependsOn(jniCompile).value,
+    compile in Test := (compile in Test).dependsOn(jniCompile).value,
     // Make shared lib available at runtime. Must be used with forked jvm to work.
     javaOptions ++= Seq(
       s"-Djava.library.path=${jniBinPath.value}"
