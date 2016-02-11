@@ -58,9 +58,10 @@ object JniPlugin extends AutoPlugin { self =>
   import autoImport._
 
   def jreIncludeFolder = {
-    System.getProperty("os.name") match {
-      case "Linux" => "linux"
-      case "Mac OS X" => "darwin"
+    System.getProperty("os.name").toLowerCase.replace(' ', '_') match {
+      case os if os.contains("mac") => "darwin"
+      case os if os.contains("linux") => "linux"
+      case os if os.contains("win") => "win32"
       case  _ => throw new Exception("Cannot determine os name. Provide a value for `javaInclude`.")
     }
   }
@@ -105,9 +106,11 @@ object JniPlugin extends AutoPlugin { self =>
     jniSourceFiles := withExtensions(jniNativeSources.value, jniCppExtensions.value),
     jniCompile := Def.task {
       val log = streams.value.log
-      val mkBinDir = s"mkdir -p ${jniBinPath.value}"
-      log.info(mkBinDir)
-      mkBinDir ! log
+//      new java.io.File(jniBinPath.value.getAbsolutePath).mkdirs()
+      jniBinPath.value.getAbsoluteFile.mkdirs()
+      //      val mkBinDir = s"mkdir -p ${jniBinPath.value}"
+      //      log.info(mkBinDir)
+      //      mkBinDir ! log
       val sources = jniSourceFiles.value.mkString(" ")
       val flags = jniGccFlags.value.mkString(" ")
       val command = s"${jniNativeCompiler.value} $flags -o ${jniBinPath.value}/lib${jniLibraryName.value}.${jniLibSuffix.value} $sources"
