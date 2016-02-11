@@ -58,7 +58,7 @@ object JniPlugin extends AutoPlugin { self =>
   import autoImport._
 
   def jreIncludeFolder = {
-    System.getProperty("os.name").toLowerCase.replace(' ', '_') match {
+    System.getProperty("os.name").toLowerCase.replace(' ', '_').replace('.', '_') match {
       case os if os.contains("mac") => "darwin"
       case os if os.contains("linux") => "linux"
       case os if os.contains("win") => "win32"
