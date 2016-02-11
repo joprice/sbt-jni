@@ -11,9 +11,11 @@ jniNativeCompiler := "g++"
 
 jniLibraryName := "basic"
 
-jniLibSuffix := {
-  if (sys.props("os.name").toLowerCase.startsWith("mac")) "dylib" else "so"
-}
+jniLibSuffix := (System.getProperty("os.name").toLowerCase.replace(' ', '_').replace('.', '_') match {
+  case os if os.contains("mac")   => "dylib"
+  case os if os.contains("win")   => "dll"
+  case _  => "so"
+})
 
 TaskKey[Unit]("check") := {
   val files = jniSourceFiles.value
