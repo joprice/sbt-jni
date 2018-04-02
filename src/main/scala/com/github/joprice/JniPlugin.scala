@@ -2,9 +2,13 @@ package com.github.joprice
 
 import sbt._
 import Keys._
+
 import scala.language.postfixOps
 import java.io.File
+
 import plugins.JvmPlugin
+
+import scala.sys.process.Process
 
 object JniPlugin extends AutoPlugin { self =>
 
@@ -120,7 +124,7 @@ object JniPlugin extends AutoPlugin { self =>
       val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
       val javahCommand = s"javah -d ${jniHeadersPath.value} -classpath $classes ${jniNativeClasses.value.mkString(" ")}"
       log.info(javahCommand)
-      checkExitCode("javah", javahCommand ! log)
+      checkExitCode("javah", Process(javahCommand) ! log)
     }.dependsOn(compile in Compile)
      .tag(Tags.Compile, Tags.CPU)
      .value,

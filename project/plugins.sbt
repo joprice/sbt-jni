@@ -1,10 +1,8 @@
+resolvers += Resolver.sbtPluginRepo("releases")
 
-resolvers += Resolver.url("bintray-sbt-plugin-releases",
-  url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.8")
 
-addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
+resolvers += Resolver.bintrayRepo("sbt", "maven-releases")
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.0")
-
-libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
-
+libraryDependencies += "org.scala-sbt" % s"scripted-plugin_${scalaBinaryVersion.value}" % sbtVersion.value
