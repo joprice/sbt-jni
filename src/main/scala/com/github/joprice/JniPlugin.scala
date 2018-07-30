@@ -43,6 +43,8 @@ object JniPlugin extends AutoPlugin { self =>
 
     lazy val jniIncludes = settingKey[Seq[String]]("Compiler includes settings")
 
+    lazy val jniLibraries = settingKey[Seq[String]]("Compiler libraries settings")
+
     lazy val jniSourceFiles = settingKey[Seq[File]]("Jni source files")
 
     lazy val jniGccFlags = settingKey[Seq[String]]("Flags to be passed to gcc")
@@ -94,6 +96,7 @@ object JniPlugin extends AutoPlugin { self =>
       "-I/usr/include",
       "-L/usr/local/include"
     ) ++ jniJreIncludes.value,
+    jniLibraries := Seq.empty,
     jniUseCpp11 := true,
     // 'dylib' and 'jnilib' work on mac, while linux expects 'so'
     jniLibSuffix := "jnilib",
@@ -111,9 +114,11 @@ object JniPlugin extends AutoPlugin { self =>
     jniCompile := Def.task {
       val log = streams.value.log
       jniBinPath.value.getAbsoluteFile.mkdirs()
-      val sources = jniSourceFiles.value.mkString(" ")
       val flags = jniGccFlags.value.mkString(" ")
-      val command = s"${jniNativeCompiler.value} $flags -o ${jniBinPath.value}/lib${jniLibraryName.value}.${jniLibSuffix.value} $sources"
+      val sources = jniSourceFiles.value.mkString(" ")
+      val libs = jniLibraries.value.mkString(" ")
+      val target = jniBinPath.value / ("lib" + jniLibraryName.value + "." + jniLibSuffix.value)
+      val command = s"${jniNativeCompiler.value} $flags -o ${target} $sources $libs"
       log.info(command)
       checkExitCode(jniNativeCompiler.value, Process(command, jniBinPath.value) ! log)
     }.dependsOn(jniJavah)
