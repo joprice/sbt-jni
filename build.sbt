@@ -13,8 +13,6 @@ bintrayOrganization := Some("joprice")
 
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
-ScriptedPlugin.projectSettings
-
 scriptedBufferLog := false
 
 scriptedLaunchOpts ++= Seq("-Xmx2G", "-Dplugin.version=" + version.value)
