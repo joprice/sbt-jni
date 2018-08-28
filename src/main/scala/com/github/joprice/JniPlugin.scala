@@ -141,7 +141,7 @@ object JniPlugin extends AutoPlugin { self =>
         }.dependsOn(compile in Compile)
          .tag(Tags.Compile, Tags.CPU)
       }
-    },
+    }.value,
     jniPossibleNativeSources := {
       def withExtension(dir: File, extension: String) = (dir ** s"*.$extension").filter(_.isFile).get
 
