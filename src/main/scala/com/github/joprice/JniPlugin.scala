@@ -124,15 +124,24 @@ object JniPlugin extends AutoPlugin { self =>
     }.dependsOn(jniJavah)
      .tag(Tags.Compile, Tags.CPU)
      .value,
-    jniJavah := Def.task {
-      val log = streams.value.log
-      val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
-      val javahCommand = s"javah -d ${jniHeadersPath.value} -classpath $classes ${jniNativeClasses.value.mkString(" ")}"
-      log.info(javahCommand)
-      checkExitCode("javah", Process(javahCommand) ! log)
-    }.dependsOn(compile in Compile)
-     .tag(Tags.Compile, Tags.CPU)
-     .value,
+    jniJavah := Def.taskDyn {
+      if (!jniNativeClasses.value.isEmpty) {
+        Def.task {
+          val log = streams.value.log
+          val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
+          val javahCommand = s"javah -d ${jniHeadersPath.value} -classpath $classes ${jniNativeClasses.value.mkString(" ")}"
+          log.info(javahCommand)
+          checkExitCode("javah", Process(javahCommand) ! log)
+        }.dependsOn(compile in Compile)
+         .tag(Tags.Compile, Tags.CPU)
+      } else {
+        Def.task{
+          val log = streams.value.log
+          log.info("jniNativeClasses is empty: skipping header generation.")
+        }.dependsOn(compile in Compile)
+         .tag(Tags.Compile, Tags.CPU)
+      }
+    }.value,
     jniPossibleNativeSources := {
       def withExtension(dir: File, extension: String) = (dir ** s"*.$extension").filter(_.isFile).get
 
