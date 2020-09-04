@@ -21,3 +21,5 @@ project/plugins/project/
 .worksheet
 
 ..sxr
+
+.direnv/

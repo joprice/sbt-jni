@@ -1,0 +1,27 @@
+name: tests
+
+# This only builds the master branch when it's pushed to, and pull requests
+# when they are to master. This avoids double testing prs.
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - name: coursier cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/coursier
+        key: coursier-cache-${{ hashFiles('**/*.sbt') }}
+        restore-keys: |
+          coursier-cache-${{ hashFiles('**/*.sbt') }}-
+          coursier-cache-
+    - run: nix-shell --pure --command "sbt scripted" ci.nix
