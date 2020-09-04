@@ -24,4 +24,4 @@ jobs:
         restore-keys: |
           coursier-cache-${{ hashFiles('**/*.sbt') }}-
           coursier-cache-
-    - run: nix-shell --pure --command "sbt scripted" ci.nix
+    - run: nix-shell --pure --command "sbt validate" ci.nix
