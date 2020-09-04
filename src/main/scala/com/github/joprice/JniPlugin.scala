@@ -92,9 +92,7 @@ object JniPlugin extends AutoPlugin { self =>
       }
     },
     jniIncludes := Seq(
-      s"-I${jniHeadersPath.value}",
-      "-I/usr/include",
-      "-L/usr/local/include"
+      s"-I${jniHeadersPath.value}"
     ) ++ jniJreIncludes.value,
     jniLibraries := Seq.empty,
     jniUseCpp11 := true,
@@ -183,4 +181,3 @@ object JniPlugin extends AutoPlugin { self =>
     }
   }
 }
-

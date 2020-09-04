@@ -3,7 +3,7 @@ name := "sbt-jni"
 
 organization := "com.github.joprice"
 
-sbtPlugin := true
+enablePlugins(SbtPlugin, ScriptedPlugin)
 
 publishArtifact in Test := false
 

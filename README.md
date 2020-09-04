@@ -1,5 +1,4 @@
-sbt-jni
-=======
+# sbt-jni
 
 [![Circle CI](https://circleci.com/gh/joprice/sbt-jni.svg?style=svg)](https://circleci.com/gh/joprice/sbt-jni)
 
@@ -13,8 +12,7 @@ On `compile`, the `jniCompile` task will be run. It first runs the `jniJavah` ta
 
 See `src/sbt-test/sbt-jni/basic` for an example project.
 
-Install
---------
+## Install
 
 ```scala
 resolvers += Resolver.url("joprice-sbt-plugins", url("http://dl.bintray.com/content/joprice/sbt-plugins"))(Resolver.ivyStylePatterns)
@@ -22,13 +20,12 @@ resolvers += Resolver.url("joprice-sbt-plugins", url("http://dl.bintray.com/cont
 addSbtPlugin("com.github.joprice" % "sbt-jni" % "0.2.0")
 ```
 
-Testing
---------
+## Testing
 
 Run `scripted` to sbt tests.
 
-Usage
---------
+
+## Usage
 
 Native sources should be placed in `jniNativeSources`, which defaults to `src/main/native`.
 
@@ -49,4 +46,9 @@ jniNativeClasses := Seq(
   "com.myapp.ClassWithJniCode"
 )
 ```
+
+## Known Issues
+
+- This plugin uses `javah`, which was removed from newer jdk versions. It will have to be updated
+  to use `javac -h` to support the latest jdks.
 
