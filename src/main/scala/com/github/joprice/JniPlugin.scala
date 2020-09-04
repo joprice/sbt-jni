@@ -25,15 +25,20 @@ object JniPlugin extends AutoPlugin { self =>
 
     lazy val jniJavah = taskKey[Unit]("Builds jni sources")
 
-    lazy val jniPossibleNativeSources = taskKey[Seq[File]]("Lists files with native annotations. Used to find classes to append to 'nativeSource'")
+    lazy val jniPossibleNativeSources = taskKey[Seq[File]](
+      "Lists files with native annotations. Used to find classes to append to 'nativeSource'"
+    )
 
     // settings
 
-    lazy val jniNativeCompiler = settingKey[String]("Compiler to use. Defaults to gcc")
+    lazy val jniNativeCompiler =
+      settingKey[String]("Compiler to use. Defaults to gcc")
 
-    lazy val jniCppExtensions = settingKey[Seq[String]]("Extensions of source files")
+    lazy val jniCppExtensions =
+      settingKey[Seq[String]]("Extensions of source files")
 
-    lazy val jniNativeClasses = settingKey[Seq[String]]("Classes with native methods")
+    lazy val jniNativeClasses =
+      settingKey[Seq[String]]("Classes with native methods")
 
     lazy val jniHeadersPath = settingKey[File]("Generated JNI headers")
 
@@ -43,37 +48,49 @@ object JniPlugin extends AutoPlugin { self =>
 
     lazy val jniIncludes = settingKey[Seq[String]]("Compiler includes settings")
 
-    lazy val jniLibraries = settingKey[Seq[String]]("Compiler libraries settings")
+    lazy val jniLibraries =
+      settingKey[Seq[String]]("Compiler libraries settings")
 
     lazy val jniSourceFiles = settingKey[Seq[File]]("Jni source files")
 
     lazy val jniGccFlags = settingKey[Seq[String]]("Flags to be passed to gcc")
 
-    lazy val jniLibraryName = settingKey[String]("Shared library produced by JNI")
+    lazy val jniLibraryName =
+      settingKey[String]("Shared library produced by JNI")
 
     lazy val jniJreIncludes = settingKey[Seq[String]]("Includes for jni")
 
-    lazy val jniJdkHome = settingKey[Option[File]]("Used to find jre include files for JNI")
+    lazy val jniJdkHome =
+      settingKey[Option[File]]("Used to find jre include files for JNI")
 
     //TODO: replace with generic flags?
-    lazy val jniUseCpp11 = settingKey[Boolean]("Whether to pass the cpp11 flag to the compiler")
+    lazy val jniUseCpp11 =
+      settingKey[Boolean]("Whether to pass the cpp11 flag to the compiler")
 
-    lazy val jniLibSuffix = settingKey[String]("Suffix for shared library, e.g., .so, .dylib")
+    lazy val jniLibSuffix =
+      settingKey[String]("Suffix for shared library, e.g., .so, .dylib")
   }
 
   import autoImport._
 
-  def jreIncludeFolder = {
-    System.getProperty("os.name").toLowerCase.replace(' ', '_').replace('.', '_') match {
-      case os if os.contains("mac") => "darwin"
+  def jreIncludeFolder =
+    System
+      .getProperty("os.name")
+      .toLowerCase
+      .replace(' ', '_')
+      .replace('.', '_') match {
+      case os if os.contains("mac")   => "darwin"
       case os if os.contains("linux") => "linux"
-      case os if os.contains("win") => "win32"
-      case  _ => throw new Exception("Cannot determine os name. Provide a value for `javaInclude`.")
+      case os if os.contains("win")   => "win32"
+      case _ =>
+        throw new Exception(
+          "Cannot determine os name. Provide a value for `javaInclude`."
+        )
     }
-  }
 
   def withExtensions(directory: File, extensions: Seq[String]): Seq[File] = {
-    val extensionsFilter = extensions.map("*." + _).foldLeft(NothingFilter: FileFilter)(_ || _)
+    val extensionsFilter =
+      extensions.map("*." + _).foldLeft(NothingFilter: FileFilter)(_ || _)
     (directory ** extensionsFilter).get
   }
 
@@ -88,7 +105,9 @@ object JniPlugin extends AutoPlugin { self =>
       jniJdkHome.value.fold(Seq.empty[String]) { home =>
         val absHome = home.getAbsolutePath
         // in a typical installation, jdk files are one directory above the location of the jre set in 'java.home'
-        Seq(s"include", s"include/$jreIncludeFolder").map(file => s"-I$absHome/../$file")
+        Seq(s"include", s"include/$jreIncludeFolder").map(file =>
+          s"-I$absHome/../$file"
+        )
       }
     },
     jniIncludes := Seq(
@@ -104,54 +123,72 @@ object JniPlugin extends AutoPlugin { self =>
       "-O3"
     ) ++ (if (jniUseCpp11.value) Seq("-std=c++0x") else Seq.empty)
       ++ jniIncludes.value,
-    jniBinPath := (target in Compile).value / "native" /  "bin",
+    jniBinPath := (target in Compile).value / "native" / "bin",
     jniHeadersPath := (target in Compile).value / "native" / "include",
     jniNativeSources := sourceDirectory.value / "main" / "native",
     jniCppExtensions := Seq("c", "cpp", "cc", "cxx"),
-    jniSourceFiles := withExtensions(jniNativeSources.value, jniCppExtensions.value),
-    jniCompile := Def.task {
-      val log = streams.value.log
-      jniBinPath.value.getAbsoluteFile.mkdirs()
-      val flags = jniGccFlags.value.mkString(" ")
-      val sources = jniSourceFiles.value.mkString(" ")
-      val libs = jniLibraries.value.mkString(" ")
-      val target = jniBinPath.value / ("lib" + jniLibraryName.value + "." + jniLibSuffix.value)
-      val command = s"${jniNativeCompiler.value} $flags -o ${target} $sources $libs"
-      log.info(command)
-      checkExitCode(jniNativeCompiler.value, Process(command, jniBinPath.value) ! log)
-    }.dependsOn(jniJavah)
-     .tag(Tags.Compile, Tags.CPU)
-     .value,
-    jniJavah := Def.taskDyn {
-      if (!jniNativeClasses.value.isEmpty) {
-        Def.task {
-          val log = streams.value.log
-          val classes = (fullClasspath in Compile).value.map(_.data).mkString(File.pathSeparator)
-          val javahCommand = s"javah -d ${jniHeadersPath.value} -classpath $classes ${jniNativeClasses.value.mkString(" ")}"
-          log.info(javahCommand)
-          checkExitCode("javah", Process(javahCommand) ! log)
-        }.dependsOn(compile in Compile)
-         .tag(Tags.Compile, Tags.CPU)
-      } else {
-        Def.task{
-          val log = streams.value.log
-          log.info("jniNativeClasses is empty: skipping header generation.")
-        }.dependsOn(compile in Compile)
-         .tag(Tags.Compile, Tags.CPU)
+    jniSourceFiles := withExtensions(
+      jniNativeSources.value,
+      jniCppExtensions.value
+    ),
+    jniCompile := Def
+      .task {
+        val log = streams.value.log
+        jniBinPath.value.getAbsoluteFile.mkdirs()
+        val flags = jniGccFlags.value.mkString(" ")
+        val sources = jniSourceFiles.value.mkString(" ")
+        val libs = jniLibraries.value.mkString(" ")
+        val target =
+          jniBinPath.value / ("lib" + jniLibraryName.value + "." + jniLibSuffix.value)
+        val command =
+          s"${jniNativeCompiler.value} $flags -o $target $sources $libs"
+        log.info(command)
+        checkExitCode(
+          jniNativeCompiler.value,
+          Process(command, jniBinPath.value) ! log
+        )
       }
+      .dependsOn(jniJavah)
+      .tag(Tags.Compile, Tags.CPU)
+      .value,
+    jniJavah := Def.taskDyn {
+      if (!jniNativeClasses.value.isEmpty)
+        Def
+          .task {
+            val log = streams.value.log
+            val classes = (fullClasspath in Compile).value
+              .map(_.data)
+              .mkString(File.pathSeparator)
+            val javahCommand =
+              s"javah -d ${jniHeadersPath.value} -classpath $classes ${jniNativeClasses.value.mkString(" ")}"
+            log.info(javahCommand)
+            checkExitCode("javah", Process(javahCommand) ! log)
+          }
+          .dependsOn(compile in Compile)
+          .tag(Tags.Compile, Tags.CPU)
+      else
+        Def
+          .task {
+            val log = streams.value.log
+            log.info("jniNativeClasses is empty: skipping header generation.")
+          }
+          .dependsOn(compile in Compile)
+          .tag(Tags.Compile, Tags.CPU)
     }.value,
     jniPossibleNativeSources := {
-      def withExtension(dir: File, extension: String) = (dir ** s"*.$extension").filter(_.isFile).get
+      def withExtension(dir: File, extension: String) =
+        (dir ** s"*.$extension").filter(_.isFile).get
 
       val JavaRegex = " native .*\\)\\s*;".r
-      val nativeJava = withExtension((javaSource in Compile).value, "java").flatMap { file =>
-        val source = IO.readLines(file)
-        val hasNative = source.exists {
-          case JavaRegex(_) => true
-          case _ => false
+      val nativeJava =
+        withExtension((javaSource in Compile).value, "java").flatMap { file =>
+          val source = IO.readLines(file)
+          val hasNative = source.exists {
+            case JavaRegex(_) => true
+            case _            => false
+          }
+          if (hasNative) Some(file) else None
         }
-        if (hasNative) Some(file) else None
-      }
 
       val nativeScala = withExtension((scalaSource in Compile).value, "scala")
         .filter(IO.read(_).contains("@native"))
@@ -173,11 +210,9 @@ object JniPlugin extends AutoPlugin { self =>
     fork in test := true
   )
 
-  private def checkExitCode(name: String, exitCode: Int): Unit = {
-    if (exitCode != 0) {
+  private def checkExitCode(name: String, exitCode: Int): Unit =
+    if (exitCode != 0)
       throw new MessageOnlyException(
         s"$name exited with non-zero status ($exitCode)"
       )
-    }
-  }
 }

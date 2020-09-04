@@ -1,7 +1,7 @@
 
 enablePlugins(JniPlugin)
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.12"
 
 jniNativeClasses := Seq(
   "com.joprice.Basic"
