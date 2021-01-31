@@ -67,6 +67,9 @@ object JniPlugin extends AutoPlugin { self =>
     lazy val jniUseCpp11 =
       settingKey[Boolean]("Whether to pass the cpp11 flag to the compiler")
 
+    lazy val jniGenerateHeaders =
+      settingKey[Boolean]("Whether to generate C headers using javah")
+
     lazy val jniLibSuffix =
       settingKey[String]("Suffix for shared library, e.g., .so, .dylib")
   }
@@ -110,11 +113,14 @@ object JniPlugin extends AutoPlugin { self =>
         )
       }
     },
-    jniIncludes := Seq(
-      s"-I${jniHeadersPath.value}"
-    ) ++ jniJreIncludes.value,
+    jniIncludes := (if (jniGenerateHeaders.value)
+                      Seq(
+                        s"-I${jniHeadersPath.value}"
+                      )
+                    else Seq()) ++ jniJreIncludes.value,
     jniLibraries := Seq.empty,
     jniUseCpp11 := true,
+    jniGenerateHeaders := true,
     // 'dylib' and 'jnilib' work on mac, while linux expects 'so'
     jniLibSuffix := "jnilib",
     jniGccFlags := Seq(
@@ -152,7 +158,15 @@ object JniPlugin extends AutoPlugin { self =>
       .tag(Tags.Compile, Tags.CPU)
       .value,
     jniJavah := Def.taskDyn {
-      if (!jniNativeClasses.value.isEmpty)
+      if (!jniGenerateHeaders.value)
+        Def
+          .task {
+            val log = streams.value.log
+            log.info("Generating headers is disabled.")
+          }
+          .dependsOn(compile in Compile)
+          .tag(Tags.Compile, Tags.CPU)
+      else if (!jniNativeClasses.value.isEmpty)
         Def
           .task {
             val log = streams.value.log
