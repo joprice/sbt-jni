@@ -6,7 +6,7 @@ enablePlugins(SbtPlugin, ScriptedPlugin)
 
 publishArtifact in Test := false
 
-scalaVersion := "2.12.12"
+scalaVersion := "2.12.13"
 
 bintrayOrganization := Some("joprice")
 
