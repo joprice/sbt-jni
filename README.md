@@ -17,7 +17,7 @@ See `src/sbt-test/sbt-jni/basic` for an example project.
 ```scala
 resolvers += Resolver.url("joprice-sbt-plugins", url("http://dl.bintray.com/content/joprice/sbt-plugins"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.github.joprice" % "sbt-jni" % "0.2.0")
+addSbtPlugin("io.github.joprice" % "sbt-jni" % "0.2.0")
 ```
 
 ## Testing
