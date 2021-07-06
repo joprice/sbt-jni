@@ -1,14 +1,12 @@
 name := "sbt-jni"
 
-organization := "com.github.joprice"
+organization := "io.github.joprice"
 
 enablePlugins(SbtPlugin, ScriptedPlugin)
 
 publishArtifact in Test := false
 
 scalaVersion := "2.12.13"
-
-bintrayOrganization := Some("joprice")
 
 licenses += ("Apache-2.0", url(
   "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -48,3 +46,8 @@ addCommandAlias(
     "scalafmtSbt"
   ).mkString(";", ";", "")
 )
+
+publishTo := sonatypePublishToBundle.value
+pomIncludeRepository := { _ => false }
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
