@@ -1,3 +1,6 @@
+import sbtrelease.ReleaseStateTransformations._
+import xerial.sbt.Sonatype._
+
 name := "sbt-jni"
 
 organization := "io.github.joprice"
@@ -52,3 +55,31 @@ pomIncludeRepository := { _ => false }
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
+
+sonatypeProjectHosting := Some(
+  GitHubHosting("joprice", "sbt-jni", "pricejosephd@gmail.com")
+)
+
+developers := List(
+  Developer(
+    id = "joprice",
+    name = "Joseph Price",
+    email = "pricejosephd@gmail.com",
+    url = url("https://github.com/joprice/")
+  )
+)
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts,
+  releaseStepCommand("sonatypeBundleRelease"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges
+)
